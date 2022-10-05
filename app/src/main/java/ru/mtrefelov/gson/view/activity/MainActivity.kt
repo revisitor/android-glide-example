@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             addItemDecoration(itemDecoration)
         }
 
-        FlickrFetcher().run { payload: Wrapper ->
+        PhotoRepository().onGetAll { payload: Wrapper ->
             val photos: List<Photo> = payload.photoPage.photos.also { it.log() }
             runOnUiThread {
                 recyclerView.adapter = PhotoRecyclerViewAdapter(mainActivityContext, photos)

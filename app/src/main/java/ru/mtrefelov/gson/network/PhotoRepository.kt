@@ -5,8 +5,8 @@ import ru.mtrefelov.gson.model.Wrapper
 import timber.log.Timber
 import java.io.IOException
 
-class FlickrFetcher {
-    fun run(onRequestSuccess: (Wrapper) -> Unit) = with(HttpClientConfiguration) {
+class PhotoRepository {
+    fun onGetAll(onRequestSuccess: (Wrapper) -> Unit) = with(HttpClientConfiguration) {
         val callback = ResponseCallback(onRequestSuccess)
         okHttpClient.newCall(request).enqueue(callback)
     }

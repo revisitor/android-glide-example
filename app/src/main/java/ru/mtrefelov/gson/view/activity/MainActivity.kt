@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             addItemDecoration(itemDecoration)
         }
 
-        PhotoRepository().onGetAll { payload: Wrapper ->
+        PhotoRepository().fetchWrapperAndRun { payload: Wrapper ->
             val photos: List<Photo> = payload.photoPage.photos.also { it.log() }
             runOnUiThread {
                 recyclerView.adapter = PhotoRecyclerViewAdapter(mainActivityContext, photos)

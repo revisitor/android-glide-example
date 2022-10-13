@@ -6,9 +6,11 @@ import timber.log.Timber
 import java.io.IOException
 
 class PhotoRepository {
-    fun onGetAll(onRequestSuccess: (Wrapper) -> Unit) = with(HttpClientConfiguration) {
-        val callback = ResponseCallback(onRequestSuccess)
-        okHttpClient.newCall(request).enqueue(callback)
+    fun fetchWrapperAndRun(onRequestSuccess: (Wrapper) -> Unit) {
+        with(HttpClientConfiguration) {
+            val callback = ResponseCallback(onRequestSuccess)
+            okHttpClient.newCall(request).enqueue(callback)
+        }
     }
 
     private class ResponseCallback(private val onRequestSuccess: (Wrapper) -> Unit) : Callback {

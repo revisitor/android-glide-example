@@ -3,25 +3,26 @@ package ru.mtrefelov.gson.view.adapter
 import android.content.*
 import android.view.*
 import android.widget.ImageView
-
 import androidx.recyclerview.widget.RecyclerView
 
 import com.bumptech.glide.Glide
-
 import ru.mtrefelov.gson.R
 import ru.mtrefelov.gson.model.Photo
+import ru.mtrefelov.gson.view.ImageClickListener
 
-import timber.log.Timber
-
-class PhotoRecyclerViewAdapter(private val context: Context, private val photos: List<Photo>) :
+class PhotoRecyclerViewAdapter(
+    private val context: Context,
+    private val photos: List<Photo>,
+    private val imageClickListener: ImageClickListener
+) :
     RecyclerView.Adapter<PhotoRecyclerViewAdapter.PhotoViewHolder>() {
 
     class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.image)
-    }
+        private val imageView: ImageView = itemView.findViewById(R.id.image)
 
-    private val clipboard: ClipboardManager by lazy {
-        context.getSystemService(ClipboardManager::class.java)
+        fun putImage(imageUrl: String) {
+            Glide.with(itemView).load(imageUrl).into(imageView)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
@@ -29,14 +30,12 @@ class PhotoRecyclerViewAdapter(private val context: Context, private val photos:
         return PhotoViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val url: String = photos[position].toUrl()
-        with(holder) {
-            Glide.with(itemView).load(url).into(imageView)
+    override fun onBindViewHolder(viewHolder: PhotoViewHolder, position: Int) {
+        val imageUrl: String = photos[position].toUrl()
+        with(viewHolder) {
+            putImage(imageUrl)
             itemView.setOnClickListener {
-                Timber.i(url)
-                val clip = ClipData.newPlainText("Flickr image link", url)
-                clipboard.setPrimaryClip(clip)
+                imageClickListener.onClick(imageUrl)
             }
         }
     }

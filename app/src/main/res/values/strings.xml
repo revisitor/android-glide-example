@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GSON</string>
+    <string name="action_add_to_favourites">Добавить в избранное</string>
 </resources>

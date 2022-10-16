@@ -1,4 +1,4 @@
-package ru.mtrefelov.gson.network
+package ru.mtrefelov.gson.model.network
 
 import okhttp3.*
 import ru.mtrefelov.gson.model.Wrapper
@@ -6,7 +6,7 @@ import timber.log.Timber
 import java.io.IOException
 
 class WrapperRepository {
-    fun getWrapper(onRequestSuccess: (Wrapper) -> Unit) {
+    fun fetchWrapper(onRequestSuccess: (Wrapper) -> Unit) {
         val call = HttpClientConfiguration.run { okHttpClient.newCall(request) }
         val callback = ResponseCallback(onRequestSuccess)
         call.enqueue(callback)

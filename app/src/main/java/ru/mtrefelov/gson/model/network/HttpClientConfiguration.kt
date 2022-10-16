@@ -1,4 +1,4 @@
-package ru.mtrefelov.gson.network
+package ru.mtrefelov.gson.model.network
 
 import com.google.gson.Gson
 import okhttp3.*

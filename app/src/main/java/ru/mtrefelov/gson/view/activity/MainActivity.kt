@@ -11,92 +11,70 @@ import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
 
 import ru.mtrefelov.gson.R
+import ru.mtrefelov.gson.api.MainContract
 import ru.mtrefelov.gson.model.*
-import ru.mtrefelov.gson.network.*
+import ru.mtrefelov.gson.presenter.MainPresenter
 import ru.mtrefelov.gson.view.ImageClickListener
 import ru.mtrefelov.gson.view.adapter.*
 
-import timber.log.Timber
-
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainContract.View, ImageClickListener {
     private lateinit var layout: ViewGroup
     private lateinit var photoRecyclerView: RecyclerView
+    private lateinit var snackbar: Snackbar
+    private lateinit var clipboard: ClipboardManager
 
-    private val activityContext: Context = this
-    private val photoRepository = WrapperRepository()
+    private lateinit var presenter: MainContract.Presenter
+
     private val photos = mutableListOf<Photo>()
-
-    private val imageClickListener = object : ImageClickListener {
-        override fun onClick(imageUrl: String) {
-            Timber.i(imageUrl)
-            putLinkIntoClipboard(imageUrl)
-            showImageActivity(imageUrl)
-        }
-    }
-
-    private val onWrapperFetched: (Wrapper) -> Unit = {
-        photos.addAll(it.photoPage.photos)
-        photos.log()
-        runOnUiThread {
-            photoRecyclerView.adapter?.notifyDataSetChanged()
-        }
-    }
-
-    private val clipboard: ClipboardManager by lazy {
-        getSystemService(ClipboardManager::class.java)
-    }
-
-    private val showImageActivityIntent: Intent by lazy {
-        Intent(activityContext, ImageActivity::class.java)
-    }
-
-    private val snackBar: Snackbar by lazy {
-        Snackbar.make(layout, "Картинка добавлена в Избранное", Snackbar.LENGTH_LONG)
-    }
-
-    private val showImageInBrowserIntent: Intent by lazy {
-        Intent(Intent.ACTION_VIEW)
-    }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        layout = findViewById(R.id.main_layout)
-
         photoRecyclerView = findViewById(R.id.recyclerview)
         photoRecyclerView.apply {
+            val activityContext: Context = this@MainActivity
+            val imageClickListener: ImageClickListener = this@MainActivity
             adapter = PhotoRecyclerViewAdapter(activityContext, photos, imageClickListener)
             layoutManager = GridLayoutManager(activityContext, 2)
             addItemDecoration(PhotoRecyclerViewItemDecoration(100))
         }
 
-        photoRepository.getWrapper { onWrapperFetched(it) }
+        layout = findViewById(R.id.main_layout)
+        snackbar = Snackbar.make(layout, "Картинка добавлена в Избранное", Snackbar.LENGTH_LONG)
+
+        clipboard = getSystemService(ClipboardManager::class.java)
+
+        setPresenter(MainPresenter(this))
+        presenter.onViewCreated()
     }
 
-    private fun List<Photo>.log() {
-        for (i in 4..lastIndex step 5) {
-            val photo = get(i)
-            val json = photo.toJson()
-            Timber.d(json)
+    override fun setPresenter(presenter: MainContract.Presenter) {
+        this.presenter = presenter
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun renderPhotos(photos: List<Photo>) {
+        this.photos.addAll(photos)
+        runOnUiThread {
+            photoRecyclerView.adapter?.notifyDataSetChanged()
         }
     }
 
-    private fun Photo.toJson() = HttpClientConfiguration.gson.toJson(this)
+    override fun openImageView(imageUrl: String) {
+        val intent = Intent(this, ImageActivity::class.java).putExtra("imageUrl", imageUrl)
+        startActivityForResult(intent, 0)
+    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-            snackBar.setAction("Открыть") {
-                data?.getStringExtra("favouriteImageUrl")?.let { imageUrl ->
-                    showImageInBrowserIntent.data = Uri.parse(imageUrl)
-                    startActivity(showImageInBrowserIntent)
-                }
-            }
+    override fun onDestroy() {
+        presenter.onDestroy()
+        super.onDestroy()
+    }
 
-            snackBar.show()
-        }
+    override fun onImageClicked(imageUrl: String) {
+        putLinkIntoClipboard(imageUrl)
+        presenter.onImageClicked(imageUrl)
     }
 
     private fun putLinkIntoClipboard(text: CharSequence) {
@@ -104,8 +82,22 @@ class MainActivity : AppCompatActivity() {
         clipboard.setPrimaryClip(clip)
     }
 
-    private fun showImageActivity(imageUrl: CharSequence) {
-        showImageActivityIntent.putExtra("imageUrl", imageUrl)
-        startActivityForResult(showImageActivityIntent, 0)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            data?.getStringExtra("favouriteImageUrl")?.let(::showSnackbar)
+        }
+    }
+
+    override fun showSnackbar(imageUrl: String) {
+        snackbar.apply {
+            setAction("Открыть") { openBrowser(imageUrl) }
+            show()
+        }
+    }
+
+    private fun openBrowser(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
     }
 }

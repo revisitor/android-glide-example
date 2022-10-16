@@ -35,7 +35,7 @@ class PhotoRecyclerViewAdapter(
         with(viewHolder) {
             putImage(imageUrl)
             itemView.setOnClickListener {
-                imageClickListener.onClick(imageUrl)
+                imageClickListener.onImageClicked(imageUrl)
             }
         }
     }

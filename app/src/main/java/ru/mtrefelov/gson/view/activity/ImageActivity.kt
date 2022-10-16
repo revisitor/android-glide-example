@@ -6,14 +6,19 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+
 import com.bumptech.glide.Glide
 
 import ru.mtrefelov.gson.R
+import ru.mtrefelov.gson.api.ImageContract
+import ru.mtrefelov.gson.presenter.ImagePresenter
 
-class ImageActivity : AppCompatActivity() {
+class ImageActivity : AppCompatActivity(), ImageContract.View {
     private lateinit var toolbar: Toolbar
     private lateinit var imageView: ImageView
     private lateinit var imageUrl: String
+
+    private lateinit var presenter: ImageContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,10 +29,24 @@ class ImageActivity : AppCompatActivity() {
 
         imageView = findViewById(R.id.image_focused)
         imageUrl = intent.getStringExtra("imageUrl")!!
-        showImage()
+
+        setPresenter(ImagePresenter(this))
+        presenter.onViewCreated()
     }
 
-    private fun showImage() = Glide.with(this).load(imageUrl).into(imageView)
+    override fun showImage() {
+        Glide.with(this).load(imageUrl).into(imageView)
+    }
+
+    override fun returnToMainView() {
+        val intent = Intent().putExtra("favouriteImageUrl", imageUrl)
+        setResult(RESULT_OK, intent)
+        finish()
+    }
+
+    override fun setPresenter(presenter: ImageContract.Presenter) {
+        this.presenter = presenter
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
@@ -36,14 +55,14 @@ class ImageActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_add_to_favourites) {
-            val resultIntent = Intent().apply {
-                putExtra("favouriteImageUrl", imageUrl)
-            }
-
-            setResult(RESULT_OK, resultIntent)
-            finish()
+            returnToMainView()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        presenter.onDestroy()
+        super.onDestroy()
     }
 }

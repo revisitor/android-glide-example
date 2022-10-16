@@ -1,4 +1,4 @@
-package ru.mtrefelov.gson.view.adapter
+package ru.mtrefelov.gson.home.view
 
 import android.content.*
 import android.view.*
@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.bumptech.glide.Glide
 import ru.mtrefelov.gson.R
-import ru.mtrefelov.gson.model.Photo
-import ru.mtrefelov.gson.view.ImageClickListener
+import ru.mtrefelov.gson.home.model.Photo
 
 class PhotoRecyclerViewAdapter(
     private val context: Context,

@@ -1,21 +1,20 @@
-package ru.mtrefelov.gson.view.activity
+package ru.mtrefelov.gson.home.view
 
 import android.annotation.SuppressLint
 import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
 
 import ru.mtrefelov.gson.R
-import ru.mtrefelov.gson.api.MainContract
-import ru.mtrefelov.gson.model.*
-import ru.mtrefelov.gson.presenter.MainPresenter
-import ru.mtrefelov.gson.view.ImageClickListener
-import ru.mtrefelov.gson.view.adapter.*
+import ru.mtrefelov.gson.home.MainContract
+import ru.mtrefelov.gson.home.model.Photo
+import ru.mtrefelov.gson.home.presenter.MainPresenter
+import ru.mtrefelov.gson.image.ImageActivity
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity(), MainContract.View, ImageClickListener {
     private lateinit var layout: ViewGroup
@@ -32,8 +31,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, ImageClickListener 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        photoRecyclerView = findViewById(R.id.recyclerview)
-        photoRecyclerView.apply {
+        photoRecyclerView = findViewById<RecyclerView>(R.id.recyclerview).apply {
             val activityContext: Context = this@MainActivity
             val imageClickListener: ImageClickListener = this@MainActivity
             adapter = PhotoRecyclerViewAdapter(activityContext, photos, imageClickListener)
@@ -41,8 +39,9 @@ class MainActivity : AppCompatActivity(), MainContract.View, ImageClickListener 
             addItemDecoration(PhotoRecyclerViewItemDecoration(100))
         }
 
-        layout = findViewById(R.id.main_layout)
-        snackbar = Snackbar.make(layout, "Картинка добавлена в Избранное", Snackbar.LENGTH_LONG)
+        layout = findViewById<ViewGroup>(R.id.main_layout).also {
+            snackbar = Snackbar.make(it, "Картинка добавлена в Избранное", Snackbar.LENGTH_LONG)
+        }
 
         clipboard = getSystemService(ClipboardManager::class.java)
 
@@ -73,6 +72,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, ImageClickListener 
     }
 
     override fun onImageClicked(imageUrl: String) {
+        Timber.i(imageUrl)
         putLinkIntoClipboard(imageUrl)
         presenter.onImageClicked(imageUrl)
     }

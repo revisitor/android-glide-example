@@ -1,4 +1,4 @@
-package ru.mtrefelov.gson.api
+package ru.mtrefelov.gson.base
 
 interface BasePresenter {
     fun onDestroy()

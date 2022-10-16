@@ -1,4 +1,4 @@
-package ru.mtrefelov.gson.model
+package ru.mtrefelov.gson.home.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,4 @@
-package ru.mtrefelov.gson.presenter
-
-import ru.mtrefelov.gson.api.ImageContract
+package ru.mtrefelov.gson.image
 
 class ImagePresenter(view: ImageContract.View) : ImageContract.Presenter {
     private var imageView: ImageContract.View? = view

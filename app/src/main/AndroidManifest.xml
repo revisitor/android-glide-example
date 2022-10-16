@@ -16,7 +16,7 @@
         android:theme="@style/Theme.GSON"
         tools:targetApi="33">
         <activity
-            android:name=".view.activity.MainActivity"
+            android:name=".home.view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,11 +24,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.activity.ImageActivity"
-            android:parentActivityName=".view.activity.MainActivity">
+            android:name=".image.ImageActivity"
+            android:parentActivityName=".home.view.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.activity.MainActivity" />
+                android:value=".home.view.MainActivity" />
         </activity>
     </application>
 

@@ -1,4 +1,4 @@
-package ru.mtrefelov.gson.view.activity
+package ru.mtrefelov.gson.image
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,8 +10,6 @@ import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
 
 import ru.mtrefelov.gson.R
-import ru.mtrefelov.gson.api.ImageContract
-import ru.mtrefelov.gson.presenter.ImagePresenter
 
 class ImageActivity : AppCompatActivity(), ImageContract.View {
     private lateinit var toolbar: Toolbar

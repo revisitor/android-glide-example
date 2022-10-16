@@ -1,4 +1,6 @@
-package ru.mtrefelov.gson.api
+package ru.mtrefelov.gson.image
+
+import ru.mtrefelov.gson.base.*
 
 interface ImageContract {
     interface Presenter : BasePresenter {

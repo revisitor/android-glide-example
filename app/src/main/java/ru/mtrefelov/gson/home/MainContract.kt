@@ -1,6 +1,8 @@
-package ru.mtrefelov.gson.api
+package ru.mtrefelov.gson.home
 
-import ru.mtrefelov.gson.model.Photo
+import ru.mtrefelov.gson.base.BasePresenter
+import ru.mtrefelov.gson.base.BaseView
+import ru.mtrefelov.gson.home.model.Photo
 
 interface MainContract {
     interface Presenter : BasePresenter {
